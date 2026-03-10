@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InterviewAI - Master Your Next Interview</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .scan-line {
+            height: 2px;
+            background: #3b82f6;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white/90 backdrop-blur-md fixed w-full z-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center cursor-pointer" onclick="navigate('home')">
+                    <img src="https://i.pinimg.com/736x/5f/f9/08/5ff9085d3a88d7979a448a79edadaebf.jpg"
+                        alt="InterviewAI Logo" class="w-10 h-10 rounded-xl object-cover mr-3 shadow-sm">
+                    <span class="font-bold text-xl tracking-tight text-slate-900">Interview<span
+                            class="text-brand-600">AI</span></span>
+                </div>
+                <div class="flex space-x-4" id="nav-auth-buttons">
+                    <button onclick="navigate('login')"
+                        class="text-slate-600 hover:text-brand-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</button>
+                    <button onclick="navigate('signup')"
+                        class="bg-brand-600 text-white hover:bg-brand-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">Sign
+                        Up</button>
+                </div>
+                <div class="hidden space-x-4 items-center" id="nav-user-menu">
+                    <div class="flex items-center gap-3 pr-4 border-r border-slate-200">
+                        <div class="text-right">
+                            <p class="text-xs font-bold text-slate-900 leading-none" id="nav-user-name">User Name</p>
+                            <p class="text-[10px] text-slate-500" id="nav-user-role">Candidate</p>
+                        </div>
+                        <img id="nav-user-avatar"
+                            src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff" alt="Profile"
+                            class="w-8 h-8 rounded-full border border-slate-200 shadow-sm object-cover">
+                    </div>
+                    <button onclick="logout()"
+                        class="text-slate-500 hover:text-red-600 px-3 py-2 text-sm font-medium transition-colors">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow pt-16">
+
+        <!-- ==================== VIEW: HOME ==================== -->
+        <div id="view-home" class="view-section fade-in block">
+            <div class="relative bg-white overflow-hidden border-b border-slate-200">
+                <div class="max-w-7xl mx-auto">
+                    <div class="relative z-10 bg-white lg:max-w-2xl lg:w-full pt-16 pb-20 px-4 sm:px-6 lg:px-8">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl">
+                            <span class="block xl:inline">Ace your next job with</span>
+                            <span class="block text-brand-600">AI Digital Twins</span>
+                        </h1>
+                        <p
+                            class="mt-3 text-base text-slate-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                            Train with the most advanced AI Interviewer. Experience real-time video feedback, resume ATS
+                            analysis, and company-specific mock sessions.
+                        </p>
+                        <div class="mt-8 sm:flex sm:justify-center lg:justify-start gap-4">
+                            <button onclick="navigate('signup')"
+                                class="w-full sm:w-auto px-8 py-4 rounded-2xl text-white bg-brand-600 font-bold hover:shadow-xl hover:-translate-y-1 transition-all">Start
+                                Free Preparation</button>
+                        </div>
+                    </div>
+                    <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+                        <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
+                            src="https://i.pinimg.com/736x/70/6e/8c/706e8c2272f678808a06897934696f20.jpg"
+                            alt="AI Interview">
+                    </div>
+                </div>
+            </div>
+            <!-- Home Page Features Details -->
+            <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="p-6 bg-white rounded-3xl shadow-sm border border-slate-100 text-center">
+                        <div
+                            class="w-12 h-12 bg-blue-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="video"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">AI Video Interviews</h3>
+                        <p class="text-slate-500 text-sm">Real-time facial expression and sentiment analysis powered by
+                            advanced vision models.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-3xl shadow-sm border border-slate-100 text-center">
+                        <div
+                            class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="file-search"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">ATS Resume Scanning</h3>
+                        <p class="text-slate-500 text-sm">Compare your resume against JD keywords and get detailed
+                            feedback to beat the algorithms.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-3xl shadow-sm border border-slate-100 text-center">
+                        <div
+                            class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="line-chart"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Smart Scorecards</h3>
+                        <p class="text-slate-500 text-sm">Get instant scoring on technical accuracy, communication
+                            skills, and confidence levels.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW: LOGIN ==================== -->
+        <div id="view-login"
+            class="view-section hidden fade-in flex items-center justify-center p-8 bg-white min-h-[calc(100vh-4rem)]">
+            <div class="max-w-md w-full">
+                <div class="text-center mb-8">
+                    <img src="https://i.pinimg.com/736x/5f/f9/08/5ff9085d3a88d7979a448a79edadaebf.jpg"
+                        class="w-16 h-16 mx-auto rounded-xl mb-4 shadow-md">
+                    <h2 class="text-3xl font-bold">Welcome Back</h2>
+                </div>
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase">Email Address</label>
+                        <input type="email" id="login-email" required
+                            class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="name@company.com">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase">Password</label>
+                        <input type="password" required
+                            class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="••••••••">
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-brand-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-brand-700 transition-all">Sign
+                        In to Dashboard</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW: SIGNUP ==================== -->
+        <div id="view-signup" class="view-section hidden fade-in p-8 bg-slate-50 min-h-[calc(100vh-4rem)]">
+            <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-slate-100">
+                <div class="mb-10 text-center">
+                    <h2 class="text-4xl font-black text-slate-900 mb-2">Create Candidate Profile</h2>
+                    <p class="text-slate-500">Fill in your details to begin your AI-powered journey.</p>
+                </div>
+                <form onsubmit="handleSignup(event)" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Personal Info -->
+                    <div class="md:col-span-3 border-b pb-4 mb-2">
+                        <h3 class="font-black text-brand-600 flex items-center gap-2"><i data-lucide="user"></i>
+                            Personal Information</h3>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Full Name</label>
+                        <input type="text" name="fullName" required
+                            class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Email</label>
+                        <input type="email" name="email" required
+                            class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Phone Number</label>
+                        <input type="tel" name="phone" placeholder="+1..."
+                            class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Date of Birth</label>
+                        <input type="date" name="dob" class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="md:col-span-2 space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Address</label>
+                        <input type="text" name="address" class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+
+                    <!-- Career & Education -->
+                    <div class="md:col-span-3 border-b pb-4 mb-2 mt-4">
+                        <h3 class="font-black text-brand-600 flex items-center gap-2"><i
+                                data-lucide="graduation-cap"></i> Career & Education</h3>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Target Role</label>
+                        <input type="text" name="targetRole" placeholder="e.g. Product Manager" required
+                            class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Experience (Years)</label>
+                        <input type="number" name="experience" class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Language Preference</label>
+                        <select name="language" class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                            <option>English</option>
+                            <option>Spanish</option>
+                            <option>French</option>
+                            <option>Hindi</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2 space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Skills (Comma separated)</label>
+                        <input type="text" name="skills" placeholder="Java, SQL, Figma..."
+                            class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Hobbies</label>
+                        <input type="text" name="hobbies" class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">School Name</label>
+                        <input type="text" name="school" class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">College/University</label>
+                        <input type="text" name="college" class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Password</label>
+                        <input type="password" required class="w-full px-4 py-2 border rounded-xl bg-slate-50">
+                    </div>
+
+                    <!-- Files -->
+                    <div class="md:col-span-3 border-b pb-4 mb-2 mt-4">
+                        <h3 class="font-black text-brand-600 flex items-center gap-2"><i data-lucide="file-up"></i>
+                            Documents</h3>
+                    </div>
+                    <div class="md:col-span-2 space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Upload Resume (PDF/Docx)</label>
+                        <div
+                            class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 cursor-pointer">
+                            <input type="file" name="resume" class="hidden" id="resume-input"
+                                onchange="updateFileLabel('resume-label', this)">
+                            <label for="resume-input" id="resume-label"
+                                class="cursor-pointer text-sm text-slate-500">Click to upload resume</label>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Profile Picture</label>
+                        <div
+                            class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 cursor-pointer">
+                            <input type="file" name="avatar" class="hidden" id="avatar-input"
+                                onchange="previewProfilePic(this)">
+                            <label for="avatar-input" id="avatar-label"
+                                class="cursor-pointer text-sm text-slate-500">Upload Image</label>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="md:col-span-3 bg-brand-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl hover:bg-brand-700 transition-all mt-6">
+                        CREATE ACCOUNT & START ANALYSIS
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW: DASHBOARD ==================== -->
+        <div id="view-dashboard" class="view-section hidden fade-in py-8 px-4 max-w-7xl mx-auto">
+            <!-- Secondary Navigation -->
+            <div class="flex items-center gap-6 border-b border-slate-200 mb-8 overflow-x-auto no-scrollbar">
+                <button onclick="setDashTab('start')"
+                    class="dash-tab active px-2 py-4 border-b-2 border-brand-600 text-brand-600 font-bold whitespace-nowrap">Start
+                    Interview</button>
+                <button onclick="setDashTab('result')"
+                    class="dash-tab px-2 py-4 border-b-2 border-transparent text-slate-500 font-bold whitespace-nowrap">Results</button>
+                <button onclick="setDashTab('resume')"
+                    class="dash-tab px-2 py-4 border-b-2 border-transparent text-slate-500 font-bold whitespace-nowrap">Resume
+                    Analysis</button>
+                <button onclick="setDashTab('profile')"
+                    class="dash-tab px-2 py-4 border-b-2 border-transparent text-slate-500 font-bold whitespace-nowrap">Profile</button>
+            </div>
+
+            <div id="dash-content">
+                <!-- START INTERVIEW TAB -->
+                <div id="tab-start" class="tab-view space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Step 1: Category -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                            <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+                                <span
+                                    class="w-6 h-6 bg-brand-600 text-white rounded-full flex items-center justify-center text-xs">1</span>
+                                Select Category
+                            </h3>
+                            <div class="space-y-3" id="cat-options"></div>
+                        </div>
+
+                        <!-- Step 2: Company -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm opacity-50 pointer-events-none transition-opacity"
+                            id="step-company">
+                            <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+                                <span
+                                    class="w-6 h-6 bg-brand-600 text-white rounded-full flex items-center justify-center text-xs">2</span>
+                                Select Company
+                            </h3>
+                            <div class="space-y-3" id="comp-options"></div>
+                        </div>
+
+                        <!-- Step 3: Role & Mode -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm opacity-50 pointer-events-none transition-opacity"
+                            id="step-role">
+                            <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+                                <span
+                                    class="w-6 h-6 bg-brand-600 text-white rounded-full flex items-center justify-center text-xs">3</span>
+                                Select Role & Mode
+                            </h3>
+                            <div class="space-y-3" id="role-options"></div>
+
+                            <div class="mt-6 pt-6 border-t border-slate-100 hidden" id="interview-prefs">
+                                <label class="text-[10px] font-black text-slate-400 uppercase block mb-3">Interview
+                                    Mode</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="setMode('video')" id="mode-video"
+                                        class="mode-btn p-3 border rounded-xl text-center font-bold text-sm flex flex-col items-center gap-1 hover:bg-slate-50">
+                                        <i data-lucide="video" class="w-4 h-4"></i> Video
+                                    </button>
+                                    <button onclick="setMode('voice')" id="mode-voice"
+                                        class="mode-btn p-3 border rounded-xl text-center font-bold text-sm flex flex-col items-center gap-1 hover:bg-slate-50">
+                                        <i data-lucide="mic" class="w-4 h-4"></i> Voice
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button onclick="startFinalInterview()"
+                                class="w-full mt-6 bg-brand-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-brand-700 transition-all scale-95 opacity-0 pointer-events-none"
+                                id="btn-start-final">
+                                START SESSION
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS TAB -->
+                <div id="tab-result" class="tab-view hidden space-y-6">
+                    <div id="no-results"
+                        class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+                        <i data-lucide="award" class="w-12 h-12 text-slate-300 mx-auto mb-4"></i>
+                        <p class="text-slate-500 font-medium">Complete an interview to see your score and improvements.
+                        </p>
+                    </div>
+                    <div id="results-display" class="hidden space-y-8">
+                        <div class="bg-brand-600 p-8 rounded-3xl text-white flex justify-between items-center">
+                            <div>
+                                <h2 class="text-2xl font-black mb-1">Interview Performance</h2>
+                                <p class="opacity-80 font-bold" id="result-meta"></p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs font-bold uppercase tracking-widest opacity-70">AI Score</p>
+                                <p class="text-5xl font-black" id="result-score">--</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-white p-6 rounded-3xl border border-red-100 bg-red-50/20">
+                                <h3 class="text-red-600 font-black mb-4 flex items-center gap-2"><i
+                                        data-lucide="alert-circle"></i> Mistake Analysis</h3>
+                                <ul class="space-y-3 text-slate-600 text-sm font-medium" id="mistakes-list"></ul>
+                            </div>
+                            <div class="bg-white p-6 rounded-3xl border border-emerald-100 bg-emerald-50/20">
+                                <h3 class="text-emerald-600 font-black mb-4 flex items-center gap-2"><i
+                                        data-lucide="trending-up"></i> Roadmap to Improve</h3>
+                                <ul class="space-y-3 text-slate-600 text-sm font-medium" id="improve-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESUME TAB -->
+                <div id="tab-resume" class="tab-view hidden">
+                    <div class="bg-white p-8 rounded-3xl border border-slate-200">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-xl font-black">AI Resume ATS Analysis</h2>
+                            <span class="px-3 py-1 bg-brand-100 text-brand-600 rounded-full text-xs font-bold">Google
+                                Gemini Engine</span>
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-12 items-center">
+                            <div
+                                class="relative w-48 h-48 rounded-full border-8 border-slate-100 flex items-center justify-center flex-col overflow-hidden">
+                                <div id="score-fill" class="absolute bottom-0 w-full bg-brand-500 opacity-20"
+                                    style="height: 75%"></div>
+                                <span class="text-5xl font-black text-brand-600 relative z-10" id="ats-score">75%</span>
+                                <span class="text-[10px] font-bold text-slate-400 relative z-10">ATS SCORE</span>
+                            </div>
+                            <div class="flex-1 space-y-6">
+                                <p class="text-slate-600">Your resume was scanned for the role: <b id="resume-role"
+                                        class="text-slate-900">Developer</b></p>
+                                <div class="space-y-4">
+                                    <div class="p-4 bg-red-50 rounded-2xl border border-red-100">
+                                        <p class="text-xs font-bold text-red-400 uppercase mb-2">Faults Detected</p>
+                                        <ul class="text-sm text-red-700 space-y-1 list-disc pl-4" id="ats-faults">
+                                            <li>Missing keywords: "System Design", "Scalability", "Agile".</li>
+                                            <li>Work experience dates are inconsistent.</li>
+                                            <li>Header formatting might break standard ATS parsers.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                        <p class="text-xs font-bold text-emerald-400 uppercase mb-2">Strengths</p>
+                                        <p class="text-sm text-emerald-700">Clear skills section and strong action verbs
+                                            in current role.</p>
+                                    </div>
+                                </div>
+
+                                <!-- RE-UPLOAD RESUME OPTION -->
+                                <div class="mt-8 pt-6 border-t">
+                                    <label class="block text-xs font-black text-slate-400 uppercase mb-4">Improve Score?
+                                        Re-Upload Resume</label>
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="flex-grow border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 relative">
+                                            <input type="file" id="resume-reupload"
+                                                class="absolute inset-0 opacity-0 cursor-pointer"
+                                                onchange="handleResumeReupload(this)">
+                                            <span class="text-sm text-slate-500 font-bold" id="reupload-label">Drag or
+                                                Click to re-scan...</span>
+                                        </div>
+                                        <button id="rescan-btn" onclick="startRescan()"
+                                            class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-black transition-all disabled:opacity-50"
+                                            disabled>Re-Scan</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFILE TAB -->
+                <div id="tab-profile" class="tab-view hidden">
+                    <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden">
+                        <div class="h-32 bg-slate-900"></div>
+                        <div class="p-8 -mt-16">
+                            <img id="prof-img" src="https://ui-avatars.com/api/?name=User&background=2563EB&color=fff"
+                                class="w-32 h-32 rounded-3xl border-4 border-white mb-6 bg-white shadow-xl object-cover">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-slate-50 p-4 rounded-2xl">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase">Full Name</label>
+                                        <p class="font-bold text-lg" id="prof-name"></p>
+                                    </div>
+                                    <div class="bg-slate-50 p-4 rounded-2xl">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase">Email</label>
+                                        <p class="font-bold text-lg" id="prof-email"></p>
+                                    </div>
+                                    <div class="bg-slate-50 p-4 rounded-2xl">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase">Career</label>
+                                        <p class="font-bold text-lg" id="prof-role"></p>
+                                    </div>
+                                    <div class="bg-slate-50 p-4 rounded-2xl">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase">Mobile</label>
+                                        <p class="font-bold text-lg" id="prof-phone"></p>
+                                    </div>
+                                    <div class="md:col-span-2 bg-slate-50 p-4 rounded-2xl">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase">Education</label>
+                                        <p class="font-bold text-md" id="prof-edu"></p>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900 rounded-3xl p-6 text-white space-y-4">
+                                    <h4 class="font-bold text-brand-400">Skills & Interests</h4>
+                                    <div id="prof-skills" class="flex flex-wrap gap-2"></div>
+                                    <div class="pt-4 border-t border-white/10">
+                                        <label class="text-[10px] font-bold opacity-50 block uppercase">Hobbies</label>
+                                        <p id="prof-hobbies" class="text-sm"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW: INTERVIEW ==================== -->
+        <div id="view-interview"
+            class="view-section hidden fade-in min-h-[calc(100vh-4rem)] bg-slate-950 flex flex-col">
+            <div class="px-6 py-4 flex justify-between items-center border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                    <span class="text-white font-bold text-sm uppercase tracking-widest"><span
+                            id="int-header">Role</span> Mock Session</span>
+                </div>
+                <div class="text-white/60 text-sm">Timer: <span id="int-timer" class="text-white font-mono">00:00</span>
+                </div>
+            </div>
+
+            <div class="flex-grow grid grid-cols-1 lg:grid-cols-4 p-6 gap-6 overflow-hidden">
+                <!-- AI Side -->
+                <div
+                    class="lg:col-span-3 relative rounded-[2.5rem] overflow-hidden bg-black border border-white/10 group shadow-2xl">
+                    <img id="ai-video-feed"
+                        src="https://i.pinimg.com/736x/bd/c3/1e/bdc31e6d4a731db5ede5d5d4a7201fe0.jpg"
+                        class="w-full h-full object-cover opacity-60">
+                    <div class="scan-line" id="video-scan"></div>
+
+                    <div
+                        class="absolute bottom-0 left-0 right-0 p-12 bg-gradient-to-t from-black via-black/80 to-transparent">
+                        <div class="flex items-start gap-6">
+                            <div
+                                class="w-16 h-16 rounded-2xl bg-brand-600 flex items-center justify-center text-white font-black shadow-2xl relative">
+                                AI
+                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full"></div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-brand-400 text-xs font-black uppercase mb-2 tracking-[0.3em]">AI
+                                    Interviewer Twin</p>
+                                <p class="text-white text-2xl md:text-3xl font-medium leading-tight" id="int-question">
+                                    Connecting via Google Gemini...</p>
+                                <canvas id="voiceCanvas" width="200" height="40"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Side -->
+                <div class="lg:col-span-1 flex flex-col gap-6">
+                    <div
+                        class="aspect-square bg-slate-900 rounded-[2rem] border border-white/10 overflow-hidden relative shadow-2xl">
+                        <div class="absolute inset-0 flex items-center justify-center text-slate-800"
+                            id="user-camera-placeholder">
+                            <i data-lucide="video-off" class="w-12 h-12"></i>
+                        </div>
+                        <video id="user-video" class="hidden w-full h-full object-cover" autoplay muted></video>
+                        <div
+                            class="absolute top-4 left-4 px-3 py-1 bg-black/50 backdrop-blur-md rounded-lg text-[10px] text-white font-bold flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span> LIVE
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white/5 rounded-[2rem] p-8 border border-white/10 flex-grow flex flex-col justify-end gap-4">
+                        <div class="space-y-1 mb-4">
+                            <p class="text-white/40 text-[10px] font-black uppercase tracking-widest">Listening Status
+                            </p>
+                            <p class="text-white font-bold" id="user-status">AI is speaking...</p>
+                        </div>
+                        <button id="btn-respond"
+                            class="w-full py-5 bg-white text-black rounded-2xl font-black shadow-lg flex items-center justify-center gap-3 hover:bg-slate-200 transition-all">
+                            <i data-lucide="mic"></i> Respond
+                        </button>
+                        <button onclick="finishInterview()"
+                            class="w-full py-4 bg-red-500/10 text-red-500 rounded-2xl font-bold text-sm hover:bg-red-500/20 transition-colors border border-red-500/20">
+                            End Interview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+
+        //voice visualization
+
+
+        let audioContext;
+        let analyser;
+        let microphone;
+        let dataArray;
+
+        async function startVoiceVisualizer() {
+            try {
+
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+
+                analyser.fftSize = 256;
+
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+
+                const canvas = document.getElementById("voiceCanvas");
+                const ctx = canvas.getContext("2d");
+
+                function draw() {
+
+                    requestAnimationFrame(draw);
+
+                    analyser.getByteFrequencyData(dataArray);
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const barWidth = canvas.width / bufferLength * 2;
+                    let barHeight;
+                    let x = 0;
+
+                    for (let i = 0; i < bufferLength; i++) {
+
+                        barHeight = dataArray[i] / 2;
+
+                        ctx.fillStyle = "#3b82f6";
+                        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+                        x += barWidth + 1;
+                    }
+                }
+
+                draw();
+
+            } catch (error) {
+                console.log("Microphone access denied");
+            }
+        }
+        // --- DATA MOCK ---
+        const DB = {
+            categories: [
+                { name: 'Technology & IT', icon: 'code-2', companies: ['Google', 'Microsoft', 'Amazon', 'Meta'] },
+                { name: 'Management', icon: 'briefcase', companies: ['Deloitte', 'McKinsey', 'Bain'] },
+                { name: 'Finance', icon: 'landmark', companies: ['Goldman Sachs', 'J.P. Morgan', 'Morgan Stanley'] }
+            ],
+            roles: ['Software Engineer', 'Product Manager', 'Data Analyst', 'HR Specialist']
+        };
+
+        let currentSelection = { cat: null, comp: null, role: null, mode: 'video' };
+        let userProfile = {
+            fullName: 'User',
+            email: 'user@example.com',
+            targetRole: 'Candidate',
+            phone: '', dob: '', address: '',
+            exp: 0, lang: 'English', skills: '', hobbies: '',
+            school: '', college: '',
+            avatarUrl: ''
+        };
+        let interviewTime = 0;
+        let timerInterval;
+
+        // --- NAVIGATION ---
+        function navigate(view) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.add('hidden'));
+            const target = document.getElementById(`view-${view}`);
+            target.classList.remove('hidden');
+            if (view === 'dashboard') {
+                target.classList.replace('flex', 'block');
+                renderDashboard();
+            } else if (view === 'login' || view === 'signup') {
+                target.classList.replace('block', 'flex');
+            } else if (view === 'interview') {
+                initCamera();
+            }
+            lucide.createIcons();
+        }
+
+        function updateFileLabel(id, el) {
+            if (el.files.length > 0) {
+                document.getElementById(id).innerText = el.files[0].name;
+            }
+        }
+
+        // --- PROFILE PIC HANDLING ---
+        function previewProfilePic(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    userProfile.avatarUrl = e.target.result;
+                    document.getElementById('avatar-label').innerText = input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // --- RESUME REUPLOAD HANDLING ---
+        function handleResumeReupload(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('reupload-label').innerText = input.files[0].name;
+                document.getElementById('rescan-btn').disabled = false;
+            }
+        }
+
+        function startRescan() {
+            const btn = document.getElementById('rescan-btn');
+            const scoreText = document.getElementById('ats-score');
+            const scoreFill = document.getElementById('score-fill');
+            const label = document.getElementById('reupload-label');
+
+            btn.innerText = "Analyzing...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                const newScore = Math.floor(Math.random() * 15) + 80; // Scores 80-95
+                scoreText.innerText = newScore + "%";
+                scoreFill.style.height = newScore + "%";
+
+                document.getElementById('ats-faults').innerHTML = `
+                    <li class="text-emerald-700 font-bold">✓ Keywords Updated Successfully.</li>
+                    <li>- Minor formatting tweak suggested for "Projects" section.</li>
+                `;
+
+                btn.innerText = "Re-Scan";
+                btn.disabled = false;
+                label.innerText = "Resume re-scanned! Score improved.";
+            }, 2000);
+        }
+
+        // --- AUTH ---
+        function handleLogin(e) { e.preventDefault(); completeAuth('User', document.getElementById('login-email').value); }
+        function handleSignup(e) {
+            e.preventDefault();
+            const f = new FormData(e.target);
+            userProfile = {
+                ...userProfile,
+                fullName: f.get('fullName'),
+                email: f.get('email'),
+                targetRole: f.get('targetRole'),
+                phone: f.get('phone'),
+                dob: f.get('dob'),
+                address: f.get('address'),
+                exp: f.get('experience'),
+                lang: f.get('language'),
+                skills: f.get('skills'),
+                hobbies: f.get('hobbies'),
+                school: f.get('school'),
+                college: f.get('college')
+            };
+            completeAuth(userProfile.fullName, userProfile.email);
+        }
+        function completeAuth(name, email) {
+            document.getElementById('nav-auth-buttons').classList.add('hidden');
+            document.getElementById('nav-user-menu').classList.remove('hidden');
+            document.getElementById('nav-user-menu').classList.add('flex');
+            document.getElementById('nav-user-name').innerText = name;
+            document.getElementById('nav-user-role').innerText = userProfile.targetRole;
+
+            // Set nav avatar
+            const avatarImg = userProfile.avatarUrl || `https://ui-avatars.com/api/?name=${name}&background=2563EB&color=fff`;
+            document.getElementById('nav-user-avatar').src = avatarImg;
+
+            navigate('dashboard');
+        }
+        function logout() { location.reload(); }
+
+        // --- DASHBOARD CORE ---
+        function setDashTab(tab) {
+            document.querySelectorAll('.dash-tab').forEach(b => {
+                b.classList.remove('active', 'border-brand-600', 'text-brand-600');
+                b.classList.add('border-transparent', 'text-slate-500');
+            });
+            // Handle if triggered via button click (event) or manual call
+            const activeBtn = Array.from(document.querySelectorAll('.dash-tab')).find(b => b.innerText.toLowerCase().includes(tab));
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'border-brand-600', 'text-brand-600');
+            }
+
+            document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function renderDashboard() {
+            // Profile data
+            document.getElementById('prof-name').innerText = userProfile.fullName;
+            document.getElementById('prof-email').innerText = userProfile.email;
+            document.getElementById('prof-role').innerText = userProfile.targetRole;
+            document.getElementById('prof-phone').innerText = userProfile.phone || 'Not Provided';
+            document.getElementById('prof-edu').innerText = `${userProfile.college || 'College'} | ${userProfile.school || 'School'}`;
+            document.getElementById('prof-hobbies').innerText = userProfile.hobbies || 'Reading, Traveling';
+
+            // Update Profile Tab Image
+            const avatarImg = userProfile.avatarUrl || `https://ui-avatars.com/api/?name=${userProfile.fullName}&background=2563EB&color=fff`;
+            document.getElementById('prof-img').src = avatarImg;
+
+            document.getElementById('resume-role').innerText = userProfile.targetRole;
+
+            const skillsContainer = document.getElementById('prof-skills');
+            const skills = (userProfile.skills || 'Communication, Problem Solving').split(',');
+            skillsContainer.innerHTML = skills.map(s => `<span class="px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold">${s.trim()}</span>`).join('');
+
+            // Start Interview List
+            const catContainer = document.getElementById('cat-options');
+            catContainer.innerHTML = DB.categories.map(c => `
+                <button onclick="selectCategory('${c.name}')" class="cat-btn w-full p-4 rounded-2xl border text-left flex items-center gap-3 transition-all hover:bg-slate-50">
+                    <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center"><i data-lucide="${c.icon}" class="w-5 h-5 text-brand-600"></i></div>
+                    <span class="font-bold text-sm">${c.name}</span>
+                </button>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // --- INTERVIEW FLOW ---
+        function selectCategory(name) {
+            currentSelection.cat = name;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('bg-brand-50', 'border-brand-600'));
+            event.currentTarget.classList.add('bg-brand-50', 'border-brand-600');
+
+            const stepComp = document.getElementById('step-company');
+            stepComp.classList.remove('opacity-50', 'pointer-events-none');
+
+            const category = DB.categories.find(c => c.name === name);
+            const compContainer = document.getElementById('comp-options');
+            compContainer.innerHTML = category.companies.map(co => `
+                <button onclick="selectCompany('${co}')" class="comp-btn w-full p-4 rounded-2xl border text-left font-bold text-sm hover:bg-slate-50 transition-all">
+                    ${co}
+                </button>
+            `).join('');
+        }
+
+        function selectCompany(name) {
+            currentSelection.comp = name;
+            document.querySelectorAll('.comp-btn').forEach(b => b.classList.remove('bg-brand-50', 'border-brand-600'));
+            event.currentTarget.classList.add('bg-brand-50', 'border-brand-600');
+
+            const stepRole = document.getElementById('step-role');
+            stepRole.classList.remove('opacity-50', 'pointer-events-none');
+
+            const roleContainer = document.getElementById('role-options');
+            roleContainer.innerHTML = DB.roles.map(r => `
+                <button onclick="selectRole('${r}')" class="role-btn w-full p-4 rounded-2xl border text-left font-bold text-sm hover:bg-slate-50 transition-all">
+                    ${r}
+                </button>
+            `).join('');
+        }
+
+        function selectRole(name) {
+            currentSelection.role = name;
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('bg-brand-50', 'border-brand-600'));
+            event.currentTarget.classList.add('bg-brand-50', 'border-brand-600');
+            document.getElementById('interview-prefs').classList.remove('hidden');
+        }
+
+        function setMode(mode) {
+            currentSelection.mode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('bg-brand-600', 'text-white', 'border-brand-600'));
+            document.getElementById(`mode-${mode}`).classList.add('bg-brand-600', 'text-white', 'border-brand-600');
+
+            const btn = document.getElementById('btn-start-final');
+            btn.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+            btn.classList.add('opacity-100', 'scale-100');
+        }
+
+        async function initCamera() {
+            if (currentSelection.mode === 'video') {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    const video = document.getElementById('user-video');
+                    video.srcObject = stream;
+                    video.classList.remove('hidden');
+                    document.getElementById('user-camera-placeholder').classList.add('hidden');
+                } catch (e) {
+                    console.log("Camera blocked");
+                }
+            }
+        }
+
+        function startFinalInterview() {
+            document.getElementById('int-header').innerText = `${currentSelection.comp} • ${currentSelection.role}`;
+            navigate('interview');
+            startInterviewSession();
+        }
+
+        function startInterviewSession() {
+
+            startVoiceVisualizer();
+            interviewTime = 0;
+            updateTimer();
+            timerInterval = setInterval(() => { interviewTime++; updateTimer(); }, 1000);
+
+            const qEl = document.getElementById('int-question');
+            const visualizer = document.getElementById('speech-visualizer');
+
+            setTimeout(() => {
+                qEl.innerText = `Hello ${userProfile.fullName}, I'm your AI interviewer from ${currentSelection.comp}. Let's start with your background in ${userProfile.targetRole}.`;
+                visualizer.classList.remove('hidden');
+                document.getElementById('user-status').innerText = "AI is speaking...";
+            }, 2000);
+
+            setTimeout(() => {
+                visualizer.classList.add('hidden');
+                document.getElementById('user-status').innerText = "Ready for your response (Listening...)";
+            }, 6000);
+        }
+
+        function updateTimer() {
+            const m = Math.floor(interviewTime / 60).toString().padStart(2, '0');
+            const s = (interviewTime % 60).toString().padStart(2, '0');
+            document.getElementById('int-timer').innerText = `${m}:${s}`;
+        }
+
+        function finishInterview() {
+            clearInterval(timerInterval);
+            // Simulate AI evaluation
+            document.getElementById('no-results').classList.add('hidden');
+            document.getElementById('results-display').classList.remove('hidden');
+            document.getElementById('result-meta').innerText = `${currentSelection.role} at ${currentSelection.comp}`;
+            document.getElementById('result-score').innerText = Math.floor(Math.random() * 20) + 70 + "/100";
+
+            document.getElementById('mistakes-list').innerHTML = `
+                <li>- Excessive use of "um" and "like" during tech explanation.</li>
+                <li>- Answered too briefly on conflict resolution questions.</li>
+                <li>- Lack of eye contact with the AI Avatar.</li>
+            `;
+            document.getElementById('improve-list').innerHTML = `
+                <li>- Practice mock sessions twice daily to reduce filler words.</li>
+                <li>- Read more on ${currentSelection.comp}'s specific system architecture.</li>
+                <li>- Focus on the STAR method for behavioral questions.</li>
+            `;
+
+            setDashTab('result');
+            navigate('dashboard');
+
+            // Stop camera
+            const video = document.getElementById('user-video');
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        window.onload = () => lucide.createIcons();
+    </script>
+</body>
+
+</html>
