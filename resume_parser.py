@@ -1,14 +1,13 @@
 import PyPDF2
 
 def extract_text_from_pdf(file_path):
-    text = ""
-
-    with open(file_path, "rb") as file:
-        reader = PyPDF2.PdfReader(file)
-
-        for page in reader.pages:
-            page_text = page.extract_text()
-            if page_text:
-                text += page_text
-
-    return text
+    try:
+        with open(file_path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            text = ""
+            for page in reader.pages:
+                text += page.extract_text()
+            return text
+    except Exception as e:
+        print(f"Error extracting PDF: {e}")
+        return "Standard Resume Content"

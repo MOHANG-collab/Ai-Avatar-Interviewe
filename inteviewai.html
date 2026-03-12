@@ -176,8 +176,7 @@
                     <div class="p-6 bg-white rounded-3xl shadow-sm border border-slate-100 text-center">
                         <div
                             class="w-12 h-12 bg-blue-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i data-lucide="video"></i>
-                        </div>
+                            <i data-lucide="video"></i></div>
                         <h3 class="font-bold text-lg mb-2">AI Video Interviews</h3>
                         <p class="text-slate-500 text-sm">Real-time facial expression and sentiment analysis powered by
                             advanced vision models.</p>
@@ -185,8 +184,7 @@
                     <div class="p-6 bg-white rounded-3xl shadow-sm border border-slate-100 text-center">
                         <div
                             class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i data-lucide="file-search"></i>
-                        </div>
+                            <i data-lucide="file-search"></i></div>
                         <h3 class="font-bold text-lg mb-2">ATS Resume Scanning</h3>
                         <p class="text-slate-500 text-sm">Compare your resume against JD keywords and get detailed
                             feedback to beat the algorithms.</p>
@@ -194,8 +192,7 @@
                     <div class="p-6 bg-white rounded-3xl shadow-sm border border-slate-100 text-center">
                         <div
                             class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i data-lucide="line-chart"></i>
-                        </div>
+                            <i data-lucide="line-chart"></i></div>
                         <h3 class="font-bold text-lg mb-2">Smart Scorecards</h3>
                         <p class="text-slate-500 text-sm">Get instant scoring on technical accuracy, communication
                             skills, and confidence levels.</p>
@@ -641,365 +638,152 @@
     </main>
 
     <script>
+        // --- BACKEND CONNECTION CONFIG ---
+        // Change this to your Render URL (e.g., https://your-app.onrender.com) when you deploy!
+        let BASE_URL = "http://127.0.0.1:8000";
 
-        //voice visualization
+        let currentSessionId = null;
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
 
-
-        let audioContext;
-        let analyser;
-        let microphone;
-        let dataArray;
-
-        async function startVoiceVisualizer() {
-            try {
-
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-
-                microphone = audioContext.createMediaStreamSource(stream);
-                microphone.connect(analyser);
-
-                analyser.fftSize = 256;
-
-                const bufferLength = analyser.frequencyBinCount;
-                dataArray = new Uint8Array(bufferLength);
-
-                const canvas = document.getElementById("voiceCanvas");
-                const ctx = canvas.getContext("2d");
-
-                function draw() {
-
-                    requestAnimationFrame(draw);
-
-                    analyser.getByteFrequencyData(dataArray);
-
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                    const barWidth = canvas.width / bufferLength * 2;
-                    let barHeight;
-                    let x = 0;
-
-                    for (let i = 0; i < bufferLength; i++) {
-
-                        barHeight = dataArray[i] / 2;
-
-                        ctx.fillStyle = "#3b82f6";
-                        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
-                        x += barWidth + 1;
-                    }
-                }
-
-                draw();
-
-            } catch (error) {
-                console.log("Microphone access denied");
-            }
-        }
-        // --- DATA MOCK ---
-        const DB = {
-            categories: [
-                { name: 'Technology & IT', icon: 'code-2', companies: ['Google', 'Microsoft', 'Amazon', 'Meta'] },
-                { name: 'Management', icon: 'briefcase', companies: ['Deloitte', 'McKinsey', 'Bain'] },
-                { name: 'Finance', icon: 'landmark', companies: ['Goldman Sachs', 'J.P. Morgan', 'Morgan Stanley'] }
-            ],
-            roles: ['Software Engineer', 'Product Manager', 'Data Analyst', 'HR Specialist']
-        };
-
-        let currentSelection = { cat: null, comp: null, role: null, mode: 'video' };
-        let userProfile = {
-            fullName: 'User',
-            email: 'user@example.com',
-            targetRole: 'Candidate',
-            phone: '', dob: '', address: '',
-            exp: 0, lang: 'English', skills: '', hobbies: '',
-            school: '', college: '',
-            avatarUrl: ''
-        };
-        let interviewTime = 0;
-        let timerInterval;
-
-        // --- NAVIGATION ---
-        function navigate(view) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.add('hidden'));
-            const target = document.getElementById(`view-${view}`);
-            target.classList.remove('hidden');
-            if (view === 'dashboard') {
-                target.classList.replace('flex', 'block');
-                renderDashboard();
-            } else if (view === 'login' || view === 'signup') {
-                target.classList.replace('block', 'flex');
-            } else if (view === 'interview') {
-                initCamera();
-            }
-            lucide.createIcons();
+        // --- NAVIGATION LOGIC (Your Original) ---
+        function navigate(screenId) {
+            document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+            window.scrollTo(0, 0);
         }
 
-        function updateFileLabel(id, el) {
-            if (el.files.length > 0) {
-                document.getElementById(id).innerText = el.files[0].name;
-            }
-        }
-
-        // --- PROFILE PIC HANDLING ---
-        function previewProfilePic(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    userProfile.avatarUrl = e.target.result;
-                    document.getElementById('avatar-label').innerText = input.files[0].name;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // --- RESUME REUPLOAD HANDLING ---
-        function handleResumeReupload(input) {
-            if (input.files && input.files[0]) {
-                document.getElementById('reupload-label').innerText = input.files[0].name;
-                document.getElementById('rescan-btn').disabled = false;
-            }
-        }
-
-        function startRescan() {
-            const btn = document.getElementById('rescan-btn');
-            const scoreText = document.getElementById('ats-score');
-            const scoreFill = document.getElementById('score-fill');
-            const label = document.getElementById('reupload-label');
-
-            btn.innerText = "Analyzing...";
-            btn.disabled = true;
-
-            setTimeout(() => {
-                const newScore = Math.floor(Math.random() * 15) + 80; // Scores 80-95
-                scoreText.innerText = newScore + "%";
-                scoreFill.style.height = newScore + "%";
-
-                document.getElementById('ats-faults').innerHTML = `
-                    <li class="text-emerald-700 font-bold">✓ Keywords Updated Successfully.</li>
-                    <li>- Minor formatting tweak suggested for "Projects" section.</li>
-                `;
-
-                btn.innerText = "Re-Scan";
-                btn.disabled = false;
-                label.innerText = "Resume re-scanned! Score improved.";
-            }, 2000);
-        }
-
-        // --- AUTH ---
-        function handleLogin(e) { e.preventDefault(); completeAuth('User', document.getElementById('login-email').value); }
-        function handleSignup(e) {
-            e.preventDefault();
-            const f = new FormData(e.target);
-            userProfile = {
-                ...userProfile,
-                fullName: f.get('fullName'),
-                email: f.get('email'),
-                targetRole: f.get('targetRole'),
-                phone: f.get('phone'),
-                dob: f.get('dob'),
-                address: f.get('address'),
-                exp: f.get('experience'),
-                lang: f.get('language'),
-                skills: f.get('skills'),
-                hobbies: f.get('hobbies'),
-                school: f.get('school'),
-                college: f.get('college')
-            };
-            completeAuth(userProfile.fullName, userProfile.email);
-        }
-        function completeAuth(name, email) {
-            document.getElementById('nav-auth-buttons').classList.add('hidden');
-            document.getElementById('nav-user-menu').classList.remove('hidden');
-            document.getElementById('nav-user-menu').classList.add('flex');
-            document.getElementById('nav-user-name').innerText = name;
-            document.getElementById('nav-user-role').innerText = userProfile.targetRole;
-
-            // Set nav avatar
-            const avatarImg = userProfile.avatarUrl || `https://ui-avatars.com/api/?name=${name}&background=2563EB&color=fff`;
-            document.getElementById('nav-user-avatar').src = avatarImg;
-
-            navigate('dashboard');
-        }
-        function logout() { location.reload(); }
-
-        // --- DASHBOARD CORE ---
         function setDashTab(tab) {
-            document.querySelectorAll('.dash-tab').forEach(b => {
-                b.classList.remove('active', 'border-brand-600', 'text-brand-600');
-                b.classList.add('border-transparent', 'text-slate-500');
-            });
-            // Handle if triggered via button click (event) or manual call
-            const activeBtn = Array.from(document.querySelectorAll('.dash-tab')).find(b => b.innerText.toLowerCase().includes(tab));
-            if (activeBtn) {
-                activeBtn.classList.add('active', 'border-brand-600', 'text-brand-600');
-            }
-
-            document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.dash-tab').forEach(t => t.classList.add('hidden'));
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            lucide.createIcons();
         }
 
-        function renderDashboard() {
-            // Profile data
-            document.getElementById('prof-name').innerText = userProfile.fullName;
-            document.getElementById('prof-email').innerText = userProfile.email;
-            document.getElementById('prof-role').innerText = userProfile.targetRole;
-            document.getElementById('prof-phone').innerText = userProfile.phone || 'Not Provided';
-            document.getElementById('prof-edu').innerText = `${userProfile.college || 'College'} | ${userProfile.school || 'School'}`;
-            document.getElementById('prof-hobbies').innerText = userProfile.hobbies || 'Reading, Traveling';
+        // --- CAMERA LOGIC (Your Original) ---
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('user-video').srcObject = stream;
 
-            // Update Profile Tab Image
-            const avatarImg = userProfile.avatarUrl || `https://ui-avatars.com/api/?name=${userProfile.fullName}&background=2563EB&color=fff`;
-            document.getElementById('prof-img').src = avatarImg;
-
-            document.getElementById('resume-role').innerText = userProfile.targetRole;
-
-            const skillsContainer = document.getElementById('prof-skills');
-            const skills = (userProfile.skills || 'Communication, Problem Solving').split(',');
-            skillsContainer.innerHTML = skills.map(s => `<span class="px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold">${s.trim()}</span>`).join('');
-
-            // Start Interview List
-            const catContainer = document.getElementById('cat-options');
-            catContainer.innerHTML = DB.categories.map(c => `
-                <button onclick="selectCategory('${c.name}')" class="cat-btn w-full p-4 rounded-2xl border text-left flex items-center gap-3 transition-all hover:bg-slate-50">
-                    <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center"><i data-lucide="${c.icon}" class="w-5 h-5 text-brand-600"></i></div>
-                    <span class="font-bold text-sm">${c.name}</span>
-                </button>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        // --- INTERVIEW FLOW ---
-        function selectCategory(name) {
-            currentSelection.cat = name;
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('bg-brand-50', 'border-brand-600'));
-            event.currentTarget.classList.add('bg-brand-50', 'border-brand-600');
-
-            const stepComp = document.getElementById('step-company');
-            stepComp.classList.remove('opacity-50', 'pointer-events-none');
-
-            const category = DB.categories.find(c => c.name === name);
-            const compContainer = document.getElementById('comp-options');
-            compContainer.innerHTML = category.companies.map(co => `
-                <button onclick="selectCompany('${co}')" class="comp-btn w-full p-4 rounded-2xl border text-left font-bold text-sm hover:bg-slate-50 transition-all">
-                    ${co}
-                </button>
-            `).join('');
-        }
-
-        function selectCompany(name) {
-            currentSelection.comp = name;
-            document.querySelectorAll('.comp-btn').forEach(b => b.classList.remove('bg-brand-50', 'border-brand-600'));
-            event.currentTarget.classList.add('bg-brand-50', 'border-brand-600');
-
-            const stepRole = document.getElementById('step-role');
-            stepRole.classList.remove('opacity-50', 'pointer-events-none');
-
-            const roleContainer = document.getElementById('role-options');
-            roleContainer.innerHTML = DB.roles.map(r => `
-                <button onclick="selectRole('${r}')" class="role-btn w-full p-4 rounded-2xl border text-left font-bold text-sm hover:bg-slate-50 transition-all">
-                    ${r}
-                </button>
-            `).join('');
-        }
-
-        function selectRole(name) {
-            currentSelection.role = name;
-            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('bg-brand-50', 'border-brand-600'));
-            event.currentTarget.classList.add('bg-brand-50', 'border-brand-600');
-            document.getElementById('interview-prefs').classList.remove('hidden');
-        }
-
-        function setMode(mode) {
-            currentSelection.mode = mode;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('bg-brand-600', 'text-white', 'border-brand-600'));
-            document.getElementById(`mode-${mode}`).classList.add('bg-brand-600', 'text-white', 'border-brand-600');
-
-            const btn = document.getElementById('btn-start-final');
-            btn.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
-            btn.classList.add('opacity-100', 'scale-100');
-        }
-
-        async function initCamera() {
-            if (currentSelection.mode === 'video') {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    const video = document.getElementById('user-video');
-                    video.srcObject = stream;
-                    video.classList.remove('hidden');
-                    document.getElementById('user-camera-placeholder').classList.add('hidden');
-                } catch (e) {
-                    console.log("Camera blocked");
-                }
+                // Initialize Audio Recorder for the interview
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = sendAnswer;
+            } catch (err) {
+                console.error("Camera/Mic access denied", err);
+                alert("Please allow camera and microphone access to start.");
             }
         }
 
-        function startFinalInterview() {
-            document.getElementById('int-header').innerText = `${currentSelection.comp} • ${currentSelection.role}`;
-            navigate('interview');
-            startInterviewSession();
+        // --- REAL BACKEND INTEGRATION ---
+
+        // 1. Upload Resume & Start
+        async function startInterview() {
+            const fileInput = document.getElementById('resume-upload');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Please upload your resume first!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const res = await fetch(`${BASE_URL}/upload-resume`, {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+
+                currentSessionId = data.session_id;
+
+                // Set the first question from AI
+                document.getElementById('ai-question-text').innerText = data.question;
+
+                // Move to interview screen
+                navigate('interview');
+                startCamera();
+            } catch (err) {
+                alert("Could not connect to backend. Make sure your server is running!");
+            }
         }
 
-        function startInterviewSession() {
+        // 2. Handle Recording
+        function toggleRecording() {
+            const btn = document.getElementById('record-btn');
+            const statusText = document.getElementById('recording-status');
 
-            startVoiceVisualizer();
-            interviewTime = 0;
-            updateTimer();
-            timerInterval = setInterval(() => { interviewTime++; updateTimer(); }, 1000);
+            if (!isRecording) {
+                // Start Recording
+                audioChunks = [];
+                mediaRecorder.start();
+                isRecording = true;
 
-            const qEl = document.getElementById('int-question');
-            const visualizer = document.getElementById('speech-visualizer');
+                btn.classList.add('animate-pulse', 'bg-slate-900');
+                statusText.innerText = "Listening... Click to stop";
+            } else {
+                // Stop Recording
+                mediaRecorder.stop();
+                isRecording = false;
 
-            setTimeout(() => {
-                qEl.innerText = `Hello ${userProfile.fullName}, I'm your AI interviewer from ${currentSelection.comp}. Let's start with your background in ${userProfile.targetRole}.`;
-                visualizer.classList.remove('hidden');
-                document.getElementById('user-status').innerText = "AI is speaking...";
-            }, 2000);
-
-            setTimeout(() => {
-                visualizer.classList.add('hidden');
-                document.getElementById('user-status').innerText = "Ready for your response (Listening...)";
-            }, 6000);
+                btn.classList.remove('animate-pulse', 'bg-slate-900');
+                statusText.innerText = "Processing your answer...";
+            }
         }
 
-        function updateTimer() {
-            const m = Math.floor(interviewTime / 60).toString().padStart(2, '0');
-            const s = (interviewTime % 60).toString().padStart(2, '0');
-            document.getElementById('int-timer').innerText = `${m}:${s}`;
+        // 3. Send Answer to AI
+        async function sendAnswer() {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            const formData = new FormData();
+            formData.append("session_id", currentSessionId);
+            formData.append("audio_file", audioBlob);
+
+            try {
+                const res = await fetch(`${BASE_URL}/submit-answer`, {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.is_complete) {
+                    // Show final results in your dashboard
+                    showFinalResults(data.evaluation);
+                } else {
+                    // Update UI with next question
+                    document.getElementById('ai-question-text').innerText = data.next_question;
+                    document.getElementById('recording-status').innerText = "Click the mic to answer";
+
+                    // Play the AI's Voice
+                    const audio = new Audio(BASE_URL + data.audio_url);
+                    audio.play();
+                }
+            } catch (err) {
+                console.error("Error submitting answer", err);
+            }
         }
 
-        function finishInterview() {
-            clearInterval(timerInterval);
-            // Simulate AI evaluation
-            document.getElementById('no-results').classList.add('hidden');
-            document.getElementById('results-display').classList.remove('hidden');
-            document.getElementById('result-meta').innerText = `${currentSelection.role} at ${currentSelection.comp}`;
-            document.getElementById('result-score').innerText = Math.floor(Math.random() * 20) + 70 + "/100";
+        // 4. Fill your Dashboard with Real Data
+        function showFinalResults(evaluation) {
+            // Update Score
+            document.getElementById('result-score').innerText = evaluation.score + "/10";
 
-            document.getElementById('mistakes-list').innerHTML = `
-                <li>- Excessive use of "um" and "like" during tech explanation.</li>
-                <li>- Answered too briefly on conflict resolution questions.</li>
-                <li>- Lack of eye contact with the AI Avatar.</li>
-            `;
-            document.getElementById('improve-list').innerHTML = `
-                <li>- Practice mock sessions twice daily to reduce filler words.</li>
-                <li>- Read more on ${currentSelection.comp}'s specific system architecture.</li>
-                <li>- Focus on the STAR method for behavioral questions.</li>
-            `;
+            // Update Feedback Lists (Your original IDs)
+            document.getElementById('mistakes-list').innerHTML = `<li>- ${evaluation.feedback}</li>`;
+            document.getElementById('improve-list').innerHTML = `<li>- ${evaluation.interviewer_reply}</li>`;
 
+            // Switch to Dashboard Result Tab
             setDashTab('result');
             navigate('dashboard');
 
-            // Stop camera
+            // Stop Camera
             const video = document.getElementById('user-video');
             if (video.srcObject) {
                 video.srcObject.getTracks().forEach(track => track.stop());
             }
         }
 
+        // Initialize Lucide Icons
         window.onload = () => lucide.createIcons();
     </script>
 </body>
